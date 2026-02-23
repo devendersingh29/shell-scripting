@@ -1,0 +1,7 @@
+| Type         | Purpose                  | Example              |
+| ------------ | ------------------------ | -------------------- |
+| `$var`       | Variable value           | `$username`          |
+| `${var}`     | Safe/advanced variable   | `${username}_backup` |
+| `$(command)` | Run command & use output | `$(date)`            |
+
+

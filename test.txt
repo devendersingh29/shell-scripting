@@ -1,0 +1,14 @@
+#!/bin/bash
+
+echo "hello dosto"
+name="dev"
+age="26"
+
+echo "hi my name is $name and age is $age"
+
+echo "Enter Usee Name"
+read username
+
+echo "my name is $username and todya is my birthday $(date)"
+
+
