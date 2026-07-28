@@ -24,9 +24,9 @@ if [ -z "$NS" ] || [ -z "$SEARCH" ]; then
 fi
 
 if [ "$NS" == "all" ]; then
-  kubectl get deployment --all-namespaces -o jsonpath='{range .items[*]}{.metadata.namespace}{"\t"}{.metadata.name}{"\t"}{range .spec.template.spec.containers[*]}{.image}{"\n"}{end}{end}' | grep "$SEARCH"
+  kubectl get deployment --all-namespaces -o jsonpath='{range .items[*]}{.metadata.namespace}{"\t"}{.metadata.name}{"\t"}{range .spec.template.spec.containers[*]}{.image}{"\n"}{end}{end}' | grep --color=always "$SEARCH"
 else
-  kubectl get deployment -n "$NS" -o jsonpath='{range .items[*]}{.metadata.namespace}{"\t"}{.metadata.name}{"\t"}{range .spec.template.spec.containers[*]}{.image}{"\n"}{end}{end}' | grep "$SEARCH"
+  kubectl get deployment -n "$NS" -o jsonpath='{range .items[*]}{.metadata.namespace}{"\t"}{.metadata.name}{"\t"}{range .spec.template.spec.containers[*]}{.image}{"\n"}{end}{end}' | grep --color=always "$SEARCH"
 fi
 EOF
 
