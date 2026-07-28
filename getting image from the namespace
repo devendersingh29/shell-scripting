@@ -1,0 +1,51 @@
+#!/bin/bash
+# ============================================================
+# setup-find-image.sh
+# One-time setup script for the "find-image" helper command.
+# Run this once: bash setup-find-image.sh
+# ============================================================
+
+# STEP 1: Create the scripts folder (if it doesn't already exist)
+mkdir -p ~/scripts
+
+# STEP 2: Write the find-image.sh script into that folder
+cat > ~/scripts/find-image.sh << 'EOF'
+#!/bin/bash
+# Usage: find-image.sh <namespace|all> <search-term>
+# Example: find-image.sh pms-dev pms-redash-ui
+# Example: find-image.sh all pms-redash-ui
+
+NS="$1"
+SEARCH="$2"
+
+if [ -z "$NS" ] || [ -z "$SEARCH" ]; then
+  echo "Usage: $0 <namespace|all> <search-term>"
+  exit 1
+fi
+
+if [ "$NS" == "all" ]; then
+  kubectl get deployment --all-namespaces -o jsonpath='{range .items[*]}{.metadata.namespace}{"\t"}{.metadata.name}{"\t"}{range .spec.template.spec.containers[*]}{.image}{"\n"}{end}{end}' | grep "$SEARCH"
+else
+  kubectl get deployment -n "$NS" -o jsonpath='{range .items[*]}{.metadata.namespace}{"\t"}{.metadata.name}{"\t"}{range .spec.template.spec.containers[*]}{.image}{"\n"}{end}{end}' | grep "$SEARCH"
+fi
+EOF
+
+# STEP 3: Make the script executable
+chmod +x ~/scripts/find-image.sh
+
+# STEP 4: Add ~/scripts to PATH permanently (only adds the line if not already present)
+if ! grep -q 'export PATH="$HOME/scripts:$PATH"' ~/.bashrc; then
+  echo 'export PATH="$HOME/scripts:$PATH"' >> ~/.bashrc
+fi
+
+# STEP 5: Reload .bashrc so PATH takes effect in THIS terminal session too
+source ~/.bashrc
+
+echo ""
+echo "Setup complete."
+echo "You can now run this from ANY directory, in any NEW terminal:"
+echo "  find-image.sh pms-dev pms-redash-ui"
+echo "  find-image.sh all pms-redash-ui"
+echo ""
+echo "If 'find-image.sh' is not found in this SAME terminal, run:"
+echo "  source ~/.bashrc"
