@@ -1,0 +1,37 @@
+#!/bin/bash
+# Node health check script — flap history + recent events + resource usage
+
+echo "=========================================="
+echo "1. NODE FLAP HISTORY (NodeNotReady/NodeReady counts per node)"
+echo "=========================================="
+for node in $(kubectl get nodes -o name); do
+  echo "--- $node ---"
+  kubectl describe "$node" | grep -E "NodeNotReady|NodeReady" | grep -E "over"
+done
+
+echo ""
+echo "=========================================="
+echo "2. RECENT NodeNotReady EVENTS (cluster-wide, within event TTL window)"
+echo "=========================================="
+kubectl get events -A --field-selector reason=NodeNotReady --sort-by='.lastTimestamp'
+
+echo ""
+echo "=========================================="
+echo "3. CURRENT NODE STATUS"
+echo "=========================================="
+kubectl get nodes -o wide
+
+echo ""
+echo "=========================================="
+echo "4. RESOURCE USAGE (requires metrics-server)"
+echo "=========================================="
+kubectl top nodes 2>/dev/null || echo "metrics-server not available or 'kubectl top' failed"
+
+echo ""
+echo "=========================================="
+echo "Done."
+echo "=========================================="
+
+
+echo 'export PATH="$HOME/scripts:$PATH"' >> ~/.bashrc
+source ~/.bashrc
